@@ -185,7 +185,7 @@ ninja
 Clone the repository
 
 ```bash
-git clone https://github.com/your-name/MonitoDesktop.git
+git clone https://github.com/gitdroidand/MonitoDesktop.git
 
 cd MonitoDesktop
 ```
