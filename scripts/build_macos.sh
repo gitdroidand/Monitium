@@ -7,68 +7,82 @@
 # Developed by Droidand
 # ============================================================
 
-set -e
+set -Eeuo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(realpath "$SCRIPT_DIR/..")"
 
 PROJECT_NAME="MonitoDesktop"
-BUILD_DIR="build"
+BUILD_DIR="$PROJECT_ROOT/build"
+
+GREEN="\033[92m"
+RED="\033[91m"
+YELLOW="\033[93m"
+BLUE="\033[94m"
+RESET="\033[0m"
 
 echo
-echo "========================================"
-echo "      Monito Desktop Build (macOS)"
-echo "========================================"
+echo -e "${BLUE}========================================${RESET}"
+echo -e "${BLUE}      Monito Desktop Build (macOS)${RESET}"
+echo -e "${BLUE}========================================${RESET}"
+echo
+
+echo "Project : $PROJECT_ROOT"
+echo "Build   : $BUILD_DIR"
 echo
 
 # ------------------------------------------------------------
-# Check dependencies
+# Dependencies
 # ------------------------------------------------------------
 
-command -v cmake >/dev/null 2>&1 || {
-    echo "Error: CMake is not installed."
+command -v cmake >/dev/null || {
+    echo -e "${RED}CMake is not installed.${RESET}"
     exit 1
 }
 
-command -v ninja >/dev/null 2>&1 || {
-    echo "Warning: Ninja not found."
-    echo "Falling back to default CMake generator."
-    GENERATOR=""
-}
+GENERATOR=""
 
-if command -v ninja >/dev/null 2>&1; then
+if command -v ninja >/dev/null; then
     GENERATOR="-G Ninja"
+else
+    echo -e "${YELLOW}Ninja not found. Using default generator.${RESET}"
 fi
-
-# ------------------------------------------------------------
-# Create build directory
-# ------------------------------------------------------------
 
 mkdir -p "$BUILD_DIR"
 
-echo "[1/3] Configuring project..."
+echo
+echo -e "${YELLOW}[1/3] Configuring...${RESET}"
 
 cmake \
-    -S . \
+    -S "$PROJECT_ROOT" \
     -B "$BUILD_DIR" \
     $GENERATOR \
     -DCMAKE_BUILD_TYPE=Release
 
 echo
-echo "[2/3] Building..."
+echo -e "${YELLOW}[2/3] Building...${RESET}"
 
-cmake --build "$BUILD_DIR"
+START=$(date +%s.%N)
+
+cmake --build "$BUILD_DIR" --parallel
+
+END=$(date +%s.%N)
+ELAPSED=$(awk "BEGIN {printf \"%.2f\", $END-$START}")
 
 echo
-echo "[3/3] Done!"
+echo -e "${GREEN}[3/3] Build completed in ${ELAPSED}s${RESET}"
+
+APP=$(find "$BUILD_DIR" -name "*.app" -type d | head -n 1)
+
 echo
 
-APP=$(find "$BUILD_DIR" -name "*.app" | head -n 1)
-
-if [ -n "$APP" ]; then
-    echo "Application bundle:"
-    echo "$APP"
+if [[ -n "$APP" ]]; then
+    echo "Application Bundle:"
+    echo "  $APP"
 else
     echo "Executable:"
-    echo "$BUILD_DIR/$PROJECT_NAME"
+    echo "  $BUILD_DIR/$PROJECT_NAME"
 fi
 
 echo
-echo "Build completed successfully."
+echo -e "${GREEN}✔ Build completed successfully.${RESET}"
