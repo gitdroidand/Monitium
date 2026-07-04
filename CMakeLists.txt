@@ -17,7 +17,10 @@ find_package(Qt6 REQUIRED COMPONENTS
     Sql
 )
 
+qt_standard_project_setup(REQUIRES 6.10)
+
 qt_policy(SET QTP0001 NEW)
+qt_policy(SET QTP0004 NEW)
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
     src/*.cpp
@@ -28,9 +31,8 @@ file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS
     include/*.h
 )
 
-file(GLOB_RECURSE QML_FILES
+file(GLOB_RECURSE QML_FILES CONFIGURE_DEPENDS
     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-    CONFIGURE_DEPENDS
     qml/*.qml
 )
 
