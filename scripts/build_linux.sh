@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-set -e
+set -Eeuo pipefail
 
-PROJECT_ROOT="$(cd "$(dirname "$0")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(realpath "$SCRIPT_DIR/..")"
 BUILD_DIR="$PROJECT_ROOT/build"
 
 GREEN="\033[92m"
@@ -12,6 +13,10 @@ BLUE="\033[94m"
 RESET="\033[0m"
 
 echo -e "${BLUE}== Monito Desktop Build ==${RESET}"
+echo
+echo "Project : $PROJECT_ROOT"
+echo "Build   : $BUILD_DIR"
+echo
 
 mkdir -p "$BUILD_DIR"
 
@@ -22,20 +27,32 @@ cmake \
     -B "$BUILD_DIR" \
     -G Ninja
 
+echo
+
 echo -e "${YELLOW}Building...${RESET}"
 
 START=$(date +%s.%N)
 
-cmake --build "$BUILD_DIR" -j
+cmake --build "$BUILD_DIR" --parallel
 
 END=$(date +%s.%N)
+ELAPSED=$(awk "BEGIN {printf \"%.2f\", $END-$START}")
 
-ELAPSED=$(awk "BEGIN {printf \"%.2f\", $END - $START}")
-
-echo -e "${GREEN}Build Success (${ELAPSED}s)${RESET}"
+echo
+echo -e "${GREEN}✔ Build Success (${ELAPSED}s)${RESET}"
 
 EXECUTABLE="$BUILD_DIR/MonitoDesktopApp"
 
-echo -e "${BLUE}Launching...${RESET}"
+if [[ ! -x "$EXECUTABLE" ]]; then
+    echo -e "${RED}Executable not found:${RESET}"
+    echo "$EXECUTABLE"
+    exit 1
+fi
 
-exec "$EXECUTABLE"
+echo
+echo -e "${BLUE}Launching...${RESET}"
+echo
+
+cd "$BUILD_DIR"
+
+exec "./MonitoDesktopApp"
