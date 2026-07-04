@@ -3,7 +3,7 @@ build-*/
 *.pro.user
 *.user
 *.autosave
-
+*.build_platform
 CMakeUserPresets.json
 
 compile_commands.json
