@@ -22,23 +22,31 @@ qt_standard_project_setup(REQUIRES 6.10)
 qt_policy(SET QTP0001 NEW)
 qt_policy(SET QTP0004 NEW)
 
+# ------------------------------------------------------------
+# Sources
+# ------------------------------------------------------------
+
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
     src/*.cpp
 )
 
 file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS
-    include/*.hpp
-    include/*.h
+    src/include/*.hpp
+    src/include/*.h
 )
 
 file(GLOB_RECURSE QML_FILES CONFIGURE_DEPENDS
     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-    qml/*.qml
+    src/ui/*.qml
 )
 
 file(GLOB_RECURSE RESOURCES CONFIGURE_DEPENDS
     resources/*.qrc
 )
+
+# ------------------------------------------------------------
+# Executable
+# ------------------------------------------------------------
 
 qt_add_executable(MonitoDesktopApp
     ${SOURCES}
@@ -49,13 +57,22 @@ qt_add_executable(MonitoDesktopApp
 qt_add_qml_module(MonitoDesktopApp
     URI MonitoDesktop
     VERSION 1.0
+
     QML_FILES
         ${QML_FILES}
 )
 
+# ------------------------------------------------------------
+# Includes
+# ------------------------------------------------------------
+
 target_include_directories(MonitoDesktopApp PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/include
 )
+
+# ------------------------------------------------------------
+# Libraries
+# ------------------------------------------------------------
 
 target_link_libraries(MonitoDesktopApp PRIVATE
     Qt6::Core

@@ -2,9 +2,15 @@
 
 <div align="center">
 
-Modern Desktop Productivity Suite built with **Qt 6**, **QML** and **C++23**
+# Monito Desktop
 
-Budget • Transactions • Notes • Streaming • Calculator • Calendar
+Modern desktop productivity suite built with **Qt 6**, **QML**, and **C++23**.
+
+A fast, modular, and native desktop application designed around the **Launcher Structure** architecture.
+
+---
+
+Finance • Notes • Streaming • Calendar • Calculator • HTML Reader
 
 GPL-3.0 License
 
@@ -12,20 +18,15 @@ GPL-3.0 License
 
 ---
 
-## Overview
+# About
 
-Monito Desktop is a modern open-source desktop productivity application focused on simplicity, performance and clean architecture.
+Monito Desktop is an open-source productivity suite focused on performance, modularity, and a modern user experience.
 
-Unlike traditional monolithic applications, Monito is designed around independent modules managed by a lightweight launcher architecture. Every feature lives inside its own module while sharing a common application framework.
+Unlike traditional desktop applications where every feature is tightly coupled together, Monito is organized as a collection of independent modules managed through a lightweight launcher.
 
-Current modules include:
+Each module owns its own UI, business logic, and data layer while sharing a common application framework.
 
-- Finance
-- Notes
-- Streaming
-- Calculator *(planned)*
-- Calendar *(planned)*
-- HTML Reader *(planned)*
+The long-term goal is to provide a complete desktop productivity environment while keeping the codebase clean, scalable, and enjoyable to maintain.
 
 ---
 
@@ -34,93 +35,102 @@ Current modules include:
 ## Finance
 
 - Budget Management
-- Income
-- Expense
-- Persistent SQLite Database
+- Income & Expense Tracking
+- SQLite Persistence
 - Automatic Budget Updates
 - Transaction History
-- Clean MVVM-style communication between QML and C++
+- Native C++ Backend
+- QML User Interface
 
 ## Notes
 
-- Rich note management *(Work in Progress)*
+- Rich Notes *(Work in Progress)*
 
 ## Streaming
 
-- Media streaming *(Work in Progress)*
+- Media Streaming *(Work in Progress)*
+
+## Upcoming Modules
+
+- Calendar
+- Calculator
+- HTML Reader
+- Settings
+- Theme Manager
 
 ---
 
-# Architecture
+# Launcher Structure
 
-Monito uses a modular architecture called **Launcher Structure**.
+Monito follows a modular architecture internally called **Launcher Structure**.
+
+Instead of placing every feature inside one large application, every module behaves like a small application living inside the launcher.
 
 ```
 Application
 │
 ├── Launcher
 │
-├── Finance Module
+├── Finance
 │
-├── Notes Module
+├── Notes
 │
-├── Streaming Module
+├── Streaming
 │
-├── Calculator Module
+├── Calendar
 │
-└── Calendar Module
+├── Calculator
+│
+└── HTML Reader
 ```
 
-Each module is isolated and contains its own:
+Each module contains its own:
 
+- User Interface
 - Models
 - Business Logic
-- UI
 - Database Layer
-- Controllers (when required)
+- Backend Services
 
-Modules communicate through clean interfaces instead of depending on each other's implementation.
+Modules communicate through clean APIs rather than depending on each other's internal implementation.
 
-This keeps the project:
+This architecture makes the project:
 
-- scalable
-- maintainable
-- testable
-- easy to extend
+- Modular
+- Maintainable
+- Scalable
+- Testable
+- Easy to extend
 
 ---
 
-# Current Project Structure
+# Project Structure
 
 ```
-src/
-│
-├── finance/
-│
-├── notes/
-│
-├── stream/
-│
-├── ui/
-│
-├── app/
-│
-└── main.cpp
+MonitoDesktop/
 
-include/
-
-resources/
-
-CMakeLists.txt
+├── src/
+│   ├── finance/
+│   ├── stream/
+│   ├── ui/
+│   ├── include/
+│   ├── app_screen.cpp
+│   └── main.cpp
+│
+├── scripts/
+│   ├── build_linux.sh
+│   ├── build_macos.sh
+│   ├── build_windows.ps1
+│   └── cross_build_windows.sh
+│
+├── container/
+│
+├── CMakeLists.txt
+│
+└── README.md
 ```
 
-As the project evolves, all QML files will be moved into:
-
-```
-src/ui/
-```
-
-to keep every module inside the same source tree.
+The project keeps implementation and interface files together inside the `src` tree, making modules self-contained and easier to navigate.
 
 ---
 
@@ -133,46 +143,44 @@ to keep every module inside the same source tree.
 - QML
 - SQLite
 - CMake
+- Ninja
 
 ---
 
 # Database
 
-Finance currently stores data using SQLite.
+The Finance module currently uses SQLite.
 
 Current tables:
 
-```
-budget
-transactions
-```
+- budget
+- transactions
 
-Future versions will include:
+Future schema additions:
 
-- Categories
 - Accounts
-- Tags
-- Budgets
-- Attachments
+- Categories
 - Recurring Transactions
+- Statistics
+- Reports
+- Encryption
+- Backup / Restore
 
 ---
 
-# Build Requirements
+# Requirements
 
-- Qt 6.8+
+- Qt 6.10+
 - CMake
-- Ninja (recommended)
+- Ninja *(recommended)*
 - C++23 Compiler
 
-Linux packages usually required:
+Typical Linux packages:
 
-```
+```text
 qt6-base
 qt6-declarative
-qt6-tools
 qt6-shadertools
-qt6-svg
 sqlite
 cmake
 ninja
@@ -186,59 +194,66 @@ Clone the repository
 
 ```bash
 git clone https://github.com/gitdroidand/MonitoDesktop.git
-
 cd MonitoDesktop
-```
-
-Configure
-
-```bash
-cmake -B build
-```
-
-Compile
-
-```bash
-cmake --build build
-```
-
-Run
-
-```bash
-./build/MonitoDesktopApp
 ```
 
 ---
 
-# macOS
-
-macOS users can build Monito directly from source.
-
-Simply run:
+## Linux
 
 ```bash
-./build_macos.sh
+./scripts/build_linux.sh
 ```
 
-The script will configure the project, compile it using CMake and generate the application bundle automatically.
+---
 
-Building from source is currently the recommended installation method for macOS.
+## macOS
+
+Monito can be built directly from source.
+
+```bash
+./scripts/build_macos.sh
+```
+
+The script automatically configures the project, builds it, and generates the macOS application bundle.
+
+Building from source is currently the recommended installation method.
+
+---
+
+## Windows
+
+Open PowerShell and execute:
+
+```powershell
+.\scripts\build_windows.ps1
+```
+
+---
+
+## Cross-build Windows (Linux)
+
+If MinGW-w64 is installed:
+
+```bash
+./scripts/cross_build_windows.sh
+```
+
+This produces a native Windows executable directly from Linux.
 
 ---
 
 # Philosophy
 
-Monito focuses on a few simple ideas.
+Monito is built around several core principles.
 
-- Clean code
-- Modern UI
-- Fast startup
 - Native performance
-- Modular architecture
-- Maintainable codebase
-- Minimal dependencies
-
-The goal is to build a desktop application that feels lightweight while remaining powerful enough for everyday productivity.
+- Clean architecture
+- Modular design
+- Modern desktop UI
+- Small dependency footprint
+- Readable code
+- Long-term maintainability
 
 ---
 
@@ -251,13 +266,14 @@ The goal is to build a desktop application that feels lightweight while remainin
 - [x] SQLite Persistence
 - [ ] Categories
 - [ ] Accounts
-- [ ] Statistics
-- [ ] Charts
 - [ ] Monthly Reports
+- [ ] Charts
 - [ ] XLSX Export
 - [ ] PDF Export
 - [ ] Backup / Restore
 - [ ] Encryption
+
+---
 
 ## Notes
 
@@ -265,20 +281,24 @@ The goal is to build a desktop application that feels lightweight while remainin
 - [ ] Markdown
 - [ ] HTML Export
 
+---
+
 ## Streaming
 
-- [ ] Local Media
+- [ ] Local Playback
 - [ ] Network Streaming
-- [ ] History
 - [ ] Drag & Drop
+- [ ] Playback History
 - [ ] Resume Playback
 
-## General
+---
 
+## Application
+
+- [ ] Theme Manager
 - [ ] Settings
-- [ ] Themes
 - [ ] Localization
-- [ ] Plugin System
+- [ ] Plugin Support
 
 ---
 
@@ -286,26 +306,26 @@ The goal is to build a desktop application that feels lightweight while remainin
 
 Contributions are welcome.
 
-Before opening a pull request please:
+Please follow these guidelines:
 
-- Follow the project coding style.
 - Keep modules independent.
-- Write clean and readable code.
-- Test your changes.
+- Follow the existing coding style.
+- Write readable C++ and QML.
 - Keep commits focused on a single feature.
+- Test changes before submitting a pull request.
 
 ---
 
 # License
 
-This project is licensed under the GNU General Public License v3.0.
+Monito Desktop is licensed under the GNU General Public License v3.0.
 
-See the LICENSE file for details.
+See the **LICENSE** file for details.
 
 ---
 
-# Credits
+# Author
 
-Developed by **Droidand**
+Developed and maintained by **Droidand**.
 
-Built with Qt ❤️
+Built with **Qt 6**, **QML**, and **C++23**.
